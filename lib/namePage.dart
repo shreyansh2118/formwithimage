@@ -33,7 +33,8 @@ class _namePageState extends State<namePage> {
         // elevation: 0,
         // backgroundColor: Colors.white70,
       ),
-      body: Padding(
+      body:
+      Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
 
@@ -42,6 +43,7 @@ class _namePageState extends State<namePage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(height: 15,),
                   Container(
                     child: Container(
                       child: Text(
@@ -70,19 +72,39 @@ class _namePageState extends State<namePage> {
                   SizedBox(
                     height: 30,
                   ),
+                  // SizedBox(
+                  //   height: 200,
+                  //   child: TextField(
+                  //     minLines: 1,
+                  //     maxLines: 10,
+                  //     controller: _desc,
+                  //     decoration: InputDecoration(
+                  //
+                  //       hintText: "Enter description with room and roll no... ",
+                  //       enabledBorder: OutlineInputBorder(
+                  //         borderSide: BorderSide(width: 3, color: Colors.black12),
+                  //         // borderRadius: BorderRadius.circular(50.0),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   Container(
+                    height: 220,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 3,color: Colors.black12)
+                    ),
                     child: TextField(
-                      controller: _desc,
+                      minLines: 1,
+                      maxLines: 10,
+                      // textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        hintText: "Enter description ",
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 3, color: Colors.black12),
-                          // borderRadius: BorderRadius.circular(50.0),
-                        ),
+                        border: InputBorder.none,
+                        hintText: "Enter description with room and roll no... ",
                       ),
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height/1.9),
+                  // SizedBox(height: MediaQuery.of(context).size.height/1.9),
+                  SizedBox(height: 60,),
                   Container(
 
                     child: ElevatedButton(

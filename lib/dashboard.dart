@@ -80,8 +80,8 @@ class _dashState extends State<dash> {
     return files;
   }
 
-
-
+  //
+  // int? selectedIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,6 +98,23 @@ class _dashState extends State<dash> {
             Container(
               child: Text("Recent Uploads",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),),
             ),SizedBox(height: 20,),
+            Row(
+              children: [
+                Container(
+                  height:20,
+                  width: 20,
+                  decoration: BoxDecoration(
+                      color: Colors.orangeAccent,
+                      borderRadius: BorderRadius.circular(100)
+                    //more than 50% of width makes circle
+                  ),
+                ),
+                SizedBox(width: 10,),
+                Container(
+                  child: Text("In review",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),),
+                ),
+              ],
+            ),SizedBox(height: 20,),
 
             Expanded(
               child: FutureBuilder(
@@ -111,14 +128,23 @@ class _dashState extends State<dash> {
                         final Map<String, dynamic> image =
                         snapshot.data![index];
 
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
+                        return Card(color: Colors.orangeAccent,
+                          // color: selectedIndex == index? Colors.orangeAccent : null,
+                          margin: new EdgeInsets.symmetric(vertical: 20.0),
                           child: ListTile(
+
                             dense: false,
                             leading: Image.network(image['url']),
                             title: Text(image['uploaded_by']),
                             subtitle: Text(image['description']),
-
+                            // trailing: IconButton(
+                            //   onPressed: () => _delete(image['path']),
+                            //
+                            //   icon: const Icon(
+                            //     Icons.delete,
+                            //     color: Colors.red,
+                            //   ),
+                            // ),
                           ),
                         );
                       },

@@ -102,7 +102,7 @@ class _loginFirstState extends State<loginFirst> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => valid()));
+                                      builder: (context) => mainPage()));
                             } else {
                               // Scaffold.of(context).showSnackBar(SnackBar(
                               //   content: Text(
@@ -126,7 +126,7 @@ class _loginFirstState extends State<loginFirst> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => valid()));
+                                      builder: (context) => mainPage()));
                             } else {
                               // Scaffold.of(context).showSnackBar(SnackBar(
                               //   content: Text(

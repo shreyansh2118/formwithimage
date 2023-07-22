@@ -1,16 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:hostel/beforeloginPage.dart';
-import 'package:hostel/homePage.dart';
-
-// import '../../authfile/emailAuth.dart';
 import '../login/authFile.dart';
-import '../mainPage.dart';
-import '../namePage.dart';
-import '../valid.dart';
 import 'admin.dart';
-// import 'adminAuth.dart';
-// import 'authFile.dart';
+
 
 class adminLogin extends StatefulWidget {
   const adminLogin({super.key});

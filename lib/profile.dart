@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hostel/login/loginPage.dart';
+import 'package:hostel/mainPage.dart';
 
+import 'beforeloginPage.dart';
 import 'login/authFile.dart';
 
 class profile extends StatefulWidget {
@@ -18,28 +20,32 @@ class _profileState extends State<profile> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
       ),
-      body: Column(
-        children: [
-          // Text( '${widget.title}',),
-          ElevatedButton(onPressed: (){
-            emailAuth().signOut()
-                .then((result) {
-              if (result == null) {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => loginFirst()));
-              } else {
-                // Scaffold.of(context).showSnackBar(SnackBar(
-                //   content: Text(
-                //     result,
-                //     style: TextStyle(fontSize: 16),
-                //   ),
-                // ));
-              }
-            });
-          }, child: Text("LogOut")),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Text( '${widget.title}',),
+            ElevatedButton(onPressed: (){
+              emailAuth().signOut()
+                  .then((result) {
+                if (result == null) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => beforeLogin()));
+                }
+                else {
+                  // Scaffold.of(context).showSnackBar(SnackBar(
+                  //   content: Text(
+                  //     result,
+                  //     style: TextStyle(fontSize: 16),
+                  //   ),
+                  // ));
+                }
+              });
+            }, child: Text("LogOut")),
+          ],
+        ),
       )
 
     );

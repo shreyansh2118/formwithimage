@@ -59,7 +59,13 @@ class _adminState extends State<admin > {
       }
     }
   }
-
+  // Color _cardColor = Colors.yellow;
+  // void _changeColor() {
+  //   setState(() {
+  //     // Toggle between two colors when the card is clicked
+  //     _cardColor = _cardColor == Colors.yellow ? Colors.greenAccent : Colors.red;
+  //   });
+  // }
   // Retriew the uploaded images
   // This function is called when the app launches for the first time or when an image is uploaded or deleted
   Future<List<Map<String, dynamic>>> _loadImages() async {
@@ -90,7 +96,7 @@ class _adminState extends State<admin > {
     // Rebuild the UI
     setState(() {});
   }
-
+  // int? selectedIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,6 +130,23 @@ class _adminState extends State<admin > {
             Container(
               child: Text("All Posts",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),),
             ),SizedBox(height: 20,),
+            Row(
+              children: [
+                Container(
+                  height:20,
+                  width: 20,
+                  decoration: BoxDecoration(
+                      color: Colors.orangeAccent,
+                      borderRadius: BorderRadius.circular(100)
+                    //more than 50% of width makes circle
+                  ),
+                ),
+                SizedBox(width: 10,),
+                Container(
+                  child: Text("In review",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),),
+                ),
+              ],
+            ),
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceAround,
             //   children: [
@@ -149,27 +172,32 @@ class _adminState extends State<admin > {
                         final Map<String, dynamic> image =
                         snapshot.data![index];
 
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 15),
+                        return GestureDetector(
+                          child: Card(
+                            color: Colors.orangeAccent,
+                            // color: selectedIndex == index? Colors.orangeAccent : null,
+                            margin: new EdgeInsets.symmetric(vertical: 20.0),
+                            child: ListTile(
 
-                          child: Column(
-                            children: [
+                              dense: false,
+                              leading: Image.network(image['url']),
+                              title: Text(image['uploaded_by']),
+                              subtitle: Text(image['description']),
+                              trailing: IconButton(
+                                onPressed: () => _delete(image['path']),
 
-                              ListTile(
-                                dense: false,
-                                leading: Image.network(image['url']),
-                                title: Text(image['uploaded_by']),
-                                subtitle: Text(image['description']),
-                                trailing: IconButton(
-                                  onPressed: () => _delete(image['path']),
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
+                          // onTap: () {
+                          //   setState(() {
+                          //     selectedIndex = index;
+                          //   });
+                          // },
                         );
 
                       },

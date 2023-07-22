@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
     // Rebuild the UI
     setState(() {});
   }
-
+  // int? selectedIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,6 +115,10 @@ class _HomePageState extends State<HomePage> {
                     label: const Text('Gallery')),
               ],
             ),
+            SizedBox(height: 30,),
+            Container(
+              child: Text("All Uploads",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
+            ),
             Expanded(
               child: FutureBuilder(
                 future: _loadImages(),
@@ -128,21 +132,25 @@ class _HomePageState extends State<HomePage> {
                         snapshot.data![index];
 
                         return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          color: Colors.orangeAccent,
+                          margin: new EdgeInsets.symmetric(vertical: 20.0),
                           child: ListTile(
+
                             dense: false,
                             leading: Image.network(image['url']),
                             title: Text(image['uploaded_by']),
                             subtitle: Text(image['description']),
-                            trailing: IconButton(
-                              onPressed: () => _delete(image['path']),
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                              ),
-                            ),
+                            // trailing: IconButton(
+                            //   onPressed: () => _delete(image['path']),
+                            //
+                            //   icon: const Icon(
+                            //     Icons.delete,
+                            //     color: Colors.red,
+                            //   ),
+                            // ),
                           ),
                         );
+
                       },
                     );
                   }
