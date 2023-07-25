@@ -24,6 +24,21 @@ class _namePageState extends State<namePage> {
 
   TextEditingController _name = TextEditingController();
   TextEditingController _desc = TextEditingController();
+  bool submit = false;
+
+  // bool submit(){
+  //   return _name!=''&&_desc != '';
+  // }
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _name.addListener(() {
+      setState(() {
+        submit = _name.text.isNotEmpty  ;
+      });
+    },);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +124,18 @@ class _namePageState extends State<namePage> {
 
                     child: ElevatedButton(
                       child: Text("next"),
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed:
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => HomePage(name: _name.text,desc: _desc.text)),
+                        // );
+                      submit ? () =>  Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage(name: _name.text,desc: _desc.text)),
-                        );
-                      },
+                        ): null,
+
                       style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.purple),
+                          // backgroundColor: MaterialStateProperty.all(Colors.green),
                           // padding: MaterialStateProperty.all(EdgeInsets.all(15)),
                           textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18))),
                     ),

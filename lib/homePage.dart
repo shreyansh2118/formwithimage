@@ -115,9 +115,9 @@ class _HomePageState extends State<HomePage> {
                     label: const Text('Gallery')),
               ],
             ),
-            SizedBox(height: 30,),
+            SizedBox(height: 50,),
             Container(
-              child: Text("All Uploads",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
+              child: Text("All Upload",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
             ),
             Expanded(
               child: FutureBuilder(
@@ -126,13 +126,14 @@ class _HomePageState extends State<HomePage> {
                     AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return ListView.builder(
-                      itemCount: snapshot.data?.length ?? 0,
+                      itemCount: snapshot.data!.length ?? 0,
+                      // itemCount: ,
                       itemBuilder: (context, index) {
                         final Map<String, dynamic> image =
                         snapshot.data![index];
 
                         return Card(
-                          color: Colors.orangeAccent,
+                          color: Colors.green.shade500,
                           margin: new EdgeInsets.symmetric(vertical: 20.0),
                           child: ListTile(
 
@@ -150,7 +151,6 @@ class _HomePageState extends State<HomePage> {
                             // ),
                           ),
                         );
-
                       },
                     );
                   }

@@ -8,7 +8,7 @@ class mainPage extends StatefulWidget {
   _mainPageState createState() => _mainPageState();
 }
 class _mainPageState extends State<mainPage > {
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
 
   List<Widget> _widgetOptions = <Widget>[
     dash(name: name, desc:desc,),

@@ -102,7 +102,8 @@ class _adminState extends State<admin > {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Welcome Admin'),
-        actions: [  ElevatedButton(onPressed: (){
+        actions: [
+          ElevatedButton(onPressed: (){
           emailAuth().signOut()
               .then((result) {
             if (result == null) {
