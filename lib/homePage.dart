@@ -1,167 +1,265 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as path;
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-class HomePage extends StatefulWidget {
-  var name;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  var desc;
+class ItemDetails {
+  String itemName;
+  DateTime installmentDate;
+  DateTime maintenanceDate;
+  File? image;
+  String contractorContact;
 
-HomePage({Key? key, required this.name, required this.desc}) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
+  ItemDetails({
+    required this.itemName,
+    required this.installmentDate,
+    required this.maintenanceDate,
+    this.image,
+    required this.contractorContact,
+  });
 }
 
-class _HomePageState extends State<HomePage> {
-  FirebaseStorage storage = FirebaseStorage.instance;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
-  // Select and image from the gallery or take a picture with the camera
-  // Then upload to Firebase Storage
-  Future<void> _upload(String inputSource) async {
-    final picker = ImagePicker();
-    XFile? pickedImage;
-    try {
-      pickedImage = await picker.pickImage(
-          source: inputSource == 'camera'
-              ? ImageSource.camera
-              : ImageSource.gallery,
-          maxWidth: 1920);
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Item Details',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: DisplayItemScreen(),
+    );
+  }
+}
 
-      final String fileName = path.basename(pickedImage!.path);
-      File imageFile = File(pickedImage.path);
+class DisplayItemScreen extends StatefulWidget {
+  @override
+  _DisplayItemScreenState createState() => _DisplayItemScreenState();
+}
 
-      try {
-        // Uploading the selected image with some custom meta data
-        await storage.ref(fileName).putFile(
-            imageFile,
-            SettableMetadata(customMetadata: {
-              'uploaded_by': 'uploaded by ${widget.name} ',
-              'description': ' ${widget.desc} '
-            }));
+class _DisplayItemScreenState extends State<DisplayItemScreen> {
+  List<ItemDetails> _itemList = [];
 
-        // Refresh the UI
-        setState(() {});
-      } on FirebaseException catch (error) {
-        if (kDebugMode) {
-          print(error);
-        }
-      }
-    } catch (err) {
-      if (kDebugMode) {
-        print(err);
-      }
-    }
+  int _calculateMonthsDifference(DateTime startDate, DateTime endDate) {
+    final difference = endDate.difference(startDate).inDays;
+    return (difference / 30).ceil(); // Rounded up to the nearest month
   }
 
-  // Retriew the uploaded images
-  // This function is called when the app launches for the first time or when an image is uploaded or deleted
-  Future<List<Map<String, dynamic>>> _loadImages() async {
-    List<Map<String, dynamic>> files = [];
-
-    final ListResult result = await storage.ref().list();
-    final List<Reference> allFiles = result.items;
-
-    await Future.forEach<Reference>(allFiles, (file) async {
-      final String fileUrl = await file.getDownloadURL();
-      final FullMetadata fileMeta = await file.getMetadata();
-      files.add({
-        "url": fileUrl,
-        "path": file.fullPath,
-        "uploaded_by": fileMeta.customMetadata?['uploaded_by'] ?? 'Nobody',
-        "description":
-        fileMeta.customMetadata?['description'] ?? 'No description'
-      });
-    });
-
-    return files;
-  }
-
-  // Delete the selected image
-  // This function is called when a trash icon is pressed
-  Future<void> _delete(String ref) async {
-    await storage.ref(ref).delete();
-    // Rebuild the UI
-    setState(() {});
-  }
-  // int? selectedIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: const Text('Kindacode.com'),
+        title: Text('Item Details'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: [
-            SizedBox(height: 20,),
-            Container(
-              child: Text("select picture for reference",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),),
-            ),SizedBox(height: 20,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton.icon(
-                    onPressed: () => _upload('camera'),
-                    icon: const Icon(Icons.camera),
-                    label: const Text('camera')),
-                ElevatedButton.icon(
-                    onPressed: () => _upload('gallery'),
-                    icon: const Icon(Icons.library_add),
-                    label: const Text('Gallery')),
-              ],
-            ),
-            SizedBox(height: 50,),
-            Container(
-              child: Text("All Upload",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: _loadImages(),
-                builder: (context,
-                    AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length ?? 0,
-                      // itemCount: ,
-                      itemBuilder: (context, index) {
-                        final Map<String, dynamic> image =
-                        snapshot.data![index];
-
-                        return Card(
-                          color: Colors.green.shade500,
-                          margin: new EdgeInsets.symmetric(vertical: 20.0),
-                          child: ListTile(
-
-                            dense: false,
-                            leading: Image.network(image['url']),
-                            title: Text(image['uploaded_by']),
-                            subtitle: Text(image['description']),
-                            // trailing: IconButton(
-                            //   onPressed: () => _delete(image['path']),
-                            //
-                            //   icon: const Icon(
-                            //     Icons.delete,
-                            //     color: Colors.red,
-                            //   ),
-                            // ),
-                          ),
-                        );
-                      },
-                    );
-                  }
-
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddItemScreen()),
+                );
+                if (result != null) {
+                  setState(() {
+                    _itemList.add(result as ItemDetails);
+                  });
+                }
+              },
+              child: Text(
+                'Add Item',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
+            if (_itemList.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _itemList.length,
+                  itemBuilder: (context, index) {
+                    final maintenanceDifference = _calculateMonthsDifference(
+                      _itemList[index].maintenanceDate,
+                      DateTime.now(),
+                    );
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_itemList[index].image != null)
+                          Container(
+                            height: 230,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              image: DecorationImage(
+                                image: FileImage(_itemList[index].image!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+
+                        Row(
+                          children: [
+                            Text(
+                              '${_itemList[index].itemName}: ',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            Text(
+                              ' $maintenanceDifference months',
+                            ),
+                          ],
+                        ),
+                        Divider(),
+                      ],
+                    );
+                  },
+                ),
+              ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddItemScreen extends StatefulWidget {
+  @override
+  _AddItemScreenState createState() => _AddItemScreenState();
+}
+
+class _AddItemScreenState extends State<AddItemScreen> {
+  ItemDetails _itemDetails = ItemDetails(
+    itemName: '',
+    installmentDate: DateTime.now(),
+    maintenanceDate: DateTime.now(),
+    contractorContact: '',
+  );
+  final picker = ImagePicker();
+  final CollectionReference itemsCollection =
+  FirebaseFirestore.instance.collection('items');
+
+  bool _isButtonDisabled() {
+    return _itemDetails.itemName.isEmpty ||
+        _itemDetails.maintenanceDate == null ||
+        _itemDetails.image == null;
+  }
+
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _itemDetails.image = File(pickedFile.path);
+      });
+    } else {
+      print('No image selected.');
+    }
+  }
+
+  void _submitForm() async {
+    if (!_isButtonDisabled() &&
+        _itemDetails.contractorContact.isNotEmpty) {
+      try {
+        await itemsCollection.add({
+          'itemName': _itemDetails.itemName,
+          'expectedMaintenanceDate': _itemDetails.maintenanceDate,
+          'installmentDate': _itemDetails.installmentDate,
+          'contractorContact': _itemDetails.contractorContact,
+        });
+
+        Navigator.pop(context, _itemDetails);
+      } catch (e) {
+        print('Error adding item: $e');
+      }
+    } else {
+      print('Please enter details.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Item'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Item Name'),
+                onChanged: (value) {
+                  setState(() {
+                    _itemDetails.itemName = value;
+                  });
+                },
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                decoration:
+                InputDecoration(labelText: 'Installment Date (YYYY-MM-DD)'),
+                onChanged: (value) {
+                  setState(() {
+                    _itemDetails.installmentDate = DateTime.parse(value);
+                  });
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                    labelText: 'Expected Maintenance Date (YYYY-MM-DD)'),
+                onChanged: (value) {
+                  setState(() {
+                    _itemDetails.maintenanceDate = DateTime.parse(value);
+                  });
+                },
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Contractor Contact'),
+                onChanged: (value) {
+                  setState(() {
+                    _itemDetails.contractorContact = value;
+                  });
+                },
+              ),
+              SizedBox(height: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ElevatedButton.icon(
+                    onPressed: () => _getImage(ImageSource.gallery),
+                    icon: Icon(Icons.image),
+                    label: Text('Choose Image'),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _getImage(ImageSource.camera),
+                    icon: Icon(Icons.camera_alt),
+                    label: Text('Take Photo'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _isButtonDisabled() ? null : _submitForm,
+                child: Text('Submit'),
+              ),
+            ],
+          ),
         ),
       ),
     );
